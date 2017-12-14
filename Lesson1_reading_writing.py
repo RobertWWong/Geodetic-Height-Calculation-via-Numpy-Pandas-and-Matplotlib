@@ -46,7 +46,7 @@ def read_write_YSFIL_Mat(input_asc : str, use_header : bool = False):
     # Each column (except for the first) will be precise to 6 decimal places.
     # The formatting of the first decimal is 9 spaces to the right,
     # The formatting for the other decimals is 15 spaces with respect to the first decimal
-    file_format = "".join(["%9.1f"]+["%15.6e"]*(asc_matrix.shape[1]-1))
+    file_format = "".join(["%9.1f"]+["%21.12e"]*(asc_matrix.shape[1]-1))
     # print(file_format)
 
     #Use the correct prefix depending on user input
@@ -67,7 +67,7 @@ def read_write_YSFIL_Mat(input_asc : str, use_header : bool = False):
             # In our case, 9 and 15 were used to justify our spacing in  file_format
             header_format = header_fmt[0].rjust(9)
             for i in header_fmt[1:]:
-                header_format += i.rjust(15)
+                header_format += i.rjust(21)
         # Numpy method 'savetxt' requires a file_name and a properly formatted array type as a required argument.
         np.savetxt(ourfile,asc_matrix, fmt =file_format, header=header_format , newline='\r\n', comments='')
 
@@ -80,6 +80,6 @@ f4 = 'Ytest_Mat_Label.txt'
 read_write_YSFIL_Mat(f1,True)
 
 # To read from header form to matrix form
-asc_matrix = np.genfromtxt(f3, dtype=float, names=True)
-print(asc_matrix[0:5,0])
-print(asc_matrix["Time"])
+asc_matrix = np.genfromtxt(f4, dtype=float, names=True)
+print(asc_matrix[0][0])
+print(asc_matrix["Time"][0:10])

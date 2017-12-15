@@ -27,7 +27,7 @@ def read_write_YSFIL_Mat(input_asc : str, use_header : bool = False):
     # First, load your asc file into a numpy
     # We will also remove the first three rows of the file before saving the file
     asc_matrix = np.loadtxt(input_asc, skiprows=3)
- 
+
     # This list contains the labels for each of the columns past the first.
     #The for loop after it will be appending a '_f' to each label to denote that it is a filter
     header_fmt = ["Time","pE","pF","pG","vE","vF","vG","r","p","hdg","aE","aF","aG","sf_fd","sf_rt","sf_dn","rDot","pDot","hdgDot","SpE","SpF","SpG","SvE","SvF","SvG","Sr","Sp","Shdg","SaE","SaF","SaG","Ssf_fd","Ssf_rt","Ssf_dn","SrDot","SpDot","ShdgDot"]
@@ -70,8 +70,8 @@ def read_write_YSFIL_Mat(input_asc : str, use_header : bool = False):
         # Numpy method 'savetxt' requires a file_name and a properly formatted array type as a required argument.
         np.savetxt(ourfile,asc_matrix, fmt =file_format, header=header_format , comments='')
 
-
-# Run demo
-f1 ='YSFIL.ASC'
-f2 = 'YSMTHAF.ASC'
-read_write_YSFIL_Mat(f1,True )
+if '__name__' == '__main__':
+    # Run demo
+    f1 ='YSFIL.ASC'
+    f2 = 'YSMTHAF.ASC'
+    # read_write_YSFIL_Mat(f1,True )

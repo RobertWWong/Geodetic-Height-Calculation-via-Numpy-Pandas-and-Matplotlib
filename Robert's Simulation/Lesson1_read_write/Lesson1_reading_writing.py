@@ -68,7 +68,7 @@ def read_write_YSFIL_Mat(input_asc : str, use_header : bool = False):
             for i in header_fmt[1:]:
                 header_format += i.rjust(21)
         # Numpy method 'savetxt' requires a file_name and a properly formatted array type as a required argument.
-        np.savetxt(ourfile,asc_matrix, fmt =file_format, header=header_format , comments='')
+        np.savetxt(ourfile,asc_matrix, fmt =file_format, header=header_format , comments='', newline= '\r\n')
 
 if '__name__' == '__main__':
     # Run demo

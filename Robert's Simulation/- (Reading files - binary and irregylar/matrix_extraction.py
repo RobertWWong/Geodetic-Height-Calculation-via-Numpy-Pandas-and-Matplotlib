@@ -54,7 +54,7 @@ def variableLoad(fname, skiprows ):
     start=1
     end = n+1
     try:
-        while n<leng:
+        while nleng:
             list_of_mat += a[start:end] #add into the list the data cluster during the intervals
 
             # Describes the starting index interval

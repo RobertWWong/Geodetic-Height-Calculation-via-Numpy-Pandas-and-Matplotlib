@@ -94,15 +94,16 @@ namespace M7Gdop.FileParsers
                 {
                     if (file.CanRead)
                     {
-                        if (header.ReadM7HeaderRecord(file))
+                        if (header.ReadM7HeaderRecord(file))    //Goes to line 77 of Header class. Stream is not closed, position is retained
                         {
                             if (header.IsThisValidRecord())
                             {
                                 string tempString = new string(header.inputDataFileType);
                                 if (tempString.ToUpper() == "GEPH")
                                 {
-                                    if (ReadEphemerisFile())
+                                    if (ReadEphemerisFile())    //Continues right where the file stream ended, on the 81's byte of the file stream
                                     {
+                                        //go to line 153 for this method's process.
                                         CloseFile();
                                         val = true;
                                     }
@@ -159,7 +160,7 @@ namespace M7Gdop.FileParsers
                 {
                     while (file.Position < file.Length)
                     {
-                        if (file.Length - file.Position >= GephVersion4.SizeOfMessage)
+                        if (file.Length - file.Position >= GephVersion4.SizeOfMessage)      //Size of message is 128 byte as a static int
                         {
                             
                             byte[] buffer = new byte[GephVersion4.SizeOfMessage];
@@ -169,9 +170,10 @@ namespace M7Gdop.FileParsers
                             BinaryReader reader = new BinaryReader(memStream);
 
 
+                            // THis is where I decide to for loop the reading of the byte balue given a proper format in python
                             ephemRecords.Add(new GephVersion4());
                             ephemRecords[ephemRecords.Count - 1].Tgeph = reader.ReadDouble();
-                            ephemRecords[ephemRecords.Count - 1].SV_ID = reader.ReadInt16();
+                            ephemRecords[ephemRecords.Count - 1].SV_ID = reader.ReadInt16();    //This is absolutely reading a signed 2 byte integer, from MSDN doc page
                             ephemRecords[ephemRecords.Count - 1].Week = reader.ReadInt16();
                             ephemRecords[ephemRecords.Count - 1].AODC = reader.ReadInt32();
                             ephemRecords[ephemRecords.Count - 1].Toc = reader.ReadInt32();

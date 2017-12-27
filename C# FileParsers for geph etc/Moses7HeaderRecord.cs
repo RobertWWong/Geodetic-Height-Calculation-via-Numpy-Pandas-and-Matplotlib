@@ -76,6 +76,10 @@ namespace M7Gdop.FileParsers
         /// <returns></returns>
         public bool ReadM7HeaderRecord(FileStream inputFileStream)
         {
+
+            /// Robert's note: His last file stream position is not reset, so we can continue
+            /// at the last position of the file buffer on line 104 in the EphemerisClass.
+            /// As following document's instruction
             bool val = false;
             if (inputFileStream != null)
             {

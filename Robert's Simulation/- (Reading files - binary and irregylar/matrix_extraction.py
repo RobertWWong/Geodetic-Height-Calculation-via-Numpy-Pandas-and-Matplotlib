@@ -43,7 +43,7 @@ def variableLoad(fname, skiprows ):
     a =allD
     # print(a[0:5])
     del a[0:5]      # Delete the first 5 lines
-     
+
     # Load the asc file and iteratively select row values into matrix form
     print("Begin itereation\n\n")
     list_of_mat = []
@@ -54,7 +54,7 @@ def variableLoad(fname, skiprows ):
     start=1
     end = n+1
     try:
-        while nleng:
+        while end < leng:
             list_of_mat += a[start:end] #add into the list the data cluster during the intervals
 
             # Describes the starting index interval
@@ -66,9 +66,10 @@ def variableLoad(fname, skiprows ):
             # Describes our ending index interval
             end= n +1
         print("We're done")
-    except:
+    except Exception as e:
+        print("Error in variable load: ", e)
+        print("n:{}  vs start:{} vs end:{}".format(n,start,end))
         pass
     narr = np.matrix(list_of_mat)
     # print(narr[-26:-1,0])
     return narr
-    

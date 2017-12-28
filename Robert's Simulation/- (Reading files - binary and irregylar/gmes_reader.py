@@ -45,3 +45,35 @@ def data_reader(bufferStream, nsat :int , nmes :int, off_set =0):
         next_row = np.fromstring(bufferStream.read(read_size), dtype=dtype)
         ndarr = np.vstack((ndarr,next_row))
     return ndarr
+
+
+def read_gmes_numpy(fname):
+    with open (fname, 'rb') as fgmes:
+        remove_header = fgmes.read(80)
+        # Get our leader recprd array
+        leader = np_leader_reader(fgmes)
+
+        np_leader = [leader]
+        np_arr = []
+        print('stage 1')
+        while type(leader) != int:
+            #Get our necessary values
+            nsat,nmes = leader['nsat'][0], leader['nmes'][0]
+
+            # Get our Data record set and add it to the temp numpy arr
+            data_set = np_record_data(fgmes, nsat, nmes, off_set = 0)
+            np_arr.append(data_set)
+
+            # Get our new leader record to read the next nsat rows
+            leader = np_leader_reader(fgmes)
+            if type(leader) != int:
+                np_leader.append(leader)
+            else:
+                print("Done Reading till gmes EOF")
+    print("End stage")
+    # print(np_leader[0],'\n',np_leader[-1])
+    # print()
+    # print(np_arr[0],'\n\n',np_arr[-1])
+    np_leader = np.vstack((np_leader[0],np_leader[1:]))
+    # np_arr = np.vstack((np_arr[0],np_arr[1:]))
+    return np_leader,np_arr

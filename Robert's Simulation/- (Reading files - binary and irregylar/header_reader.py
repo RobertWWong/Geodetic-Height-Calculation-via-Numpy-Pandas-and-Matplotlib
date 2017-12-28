@@ -30,19 +30,3 @@ def read_header_data(fname:str,byte_per_low :int , data_type : int , traditional
             npArr = np.fromfile(fd, dtype =dtype)
             if not traditional_reading:
                 return header, npArr
-
-            #  The statement below will read 128 bytes into a numpy array until an eof is reached
-            # i = 0
-            # fd.seek(80)
-            # while fd.readable() and i<100:
-            #     try:
-            #         buffer_list.append(fd.read(byte_per_low))
-            #         if buffer_list[i] == b'':
-            #             print("Breaking at {} rows\n".format(i))
-            #             buffer_list.pop()
-            #             return header,conversion_list
-            #
-            #         conversion_list.append(np.frombuffer(buffer_list[i],dtype=dtype))
-            #     except Exception as e:
-            #         raise e
-            #     i += 1

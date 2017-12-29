@@ -241,11 +241,11 @@ ntype += 'f8,'*2
 ntype +='i2'
 'i1'*4 + 'i4'*2 + 'f8'*2 + 'i2'
 # eval ('i1'*4 + 'i4'*2 + 'f8'*2 + 'i2')
-
+type(b)
 # Then you can save this data via np.savetxt
 f = np.asarray(b,dtype = ntype)
 f
-np.savetxt('test_gmes2.txt', f, fmt='%.18e', delimiter=' ', newline='n', header='', footer='', comments='# ')
+np.savetxt('test_gmes2.txt', f, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
 
 c[61231]

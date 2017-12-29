@@ -1,45 +1,51 @@
-from array import array
 import numpy as np
+import gmes_reader as gmr
+import geph_reader as ger
+import mrfil_reader as mrr
+
+mrfil = 'MRFIL.asc'
+geph = 'geph.eph'
+gmes = 'gmes.mes'
+
+# epFile = ger.read_geph_data_frame(geph)
+# ep_header, ep_data = epFile
+# ger.save_to_text("test_geph1.txt", ep_data)
 
 
-output_file = open('test_bin', 'wb')
-float_array = array('d', [159674.609536363])
-float_array.tofile(output_file)
-output_file.close()
 
-input_file = open('test_bin', 'rb')
-float_array = array('d')
-float_array.fromfile(input_file,1)
-input_file.close()
-input_file.closed
+mesFile = gmr.read_gmes_numpy(gmes)
+# len(mesFile)
+mHead, mLead, mData ,mCleand= mesFile
 
-float_array
+# Can't do without proper formatting
+np.savetxt('test_gmes.txt',mData, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
-input_file = open('test_bin', 'rb')
-input_file.read()
-input_file.close()
-# with open('test_bin.bin','wb') as wb:
-#     fl = [123.1241,5123.12353,3123.534,2164.234]
+np.tofile
+
+
+len(mLead)
+len(mData)
+len(mCleand)
+fmt = 'i1,'*4 + 'i4,'*2 + 'f8,'*2 + 'i2'
+fmt
+
+nt = np.dtype(fmt)
+np.asarray(mData, dtype=nt)
+
+
+mData[:10]
+
+
+mData[0:10]
+mCleand[0:100]
+mData
+# gmr.save_to_txt('test_gmes real.txt',mData)
+mLead
 #
-#     farray = array ('d', fl)
-#     farray.tofile(wb)
+# mrFile = mrr.read_header_data(mrfil)
+
+# len(mrFile)
+# mrFile[0,0]
 #
-#
-#
-# with open('test_bin.bin','rb') as rb:
-#     floatArr = array('d')
-#     floatArr.fromstring(rb.read())
-#
-#     red = rb.read()
-#
-# # fd = open('test_bin.bin','rb')
-# #
-# # cont = fd.readline()
-# #
-# # cont
-# # fd.close()
-# # fd.closed
-# #
-# # import st
-# # for i in cont:
-# #     print(i, chr(i))
+# ep_data#
+# mData[0]

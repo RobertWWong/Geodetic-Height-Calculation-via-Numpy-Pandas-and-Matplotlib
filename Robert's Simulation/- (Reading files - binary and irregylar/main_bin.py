@@ -6,10 +6,10 @@ import matrix_extraction as me
 mrfil = 'MRFIL.ASC'; geph = 'geph.eph'; gmes = 'gmes.mes'
 
 print('Example mrfil file at work')
-mrfil_ex = me.variableLoad(mrfil,0)
-
-
-mrfil_ex[:,0]
+# mrfil_ex = me.variableLoad(mrfil,0)
+#
+#
+# mrfil_ex[:,0]
 
 # # head, row = rw.read_header_data(geph, 128 , 4, traditional_reading = False)
 # #
@@ -239,6 +239,8 @@ ntype
 ntype += 'i4,'*2
 ntype += 'f8,'*2
 ntype +='i2'
+'i1'*4 + 'i4'*2 + 'f8'*2 + 'i2'
+# eval ('i1'*4 + 'i4'*2 + 'f8'*2 + 'i2')
 
 # Then you can save this data via np.savetxt
 f = np.asarray(b,dtype = ntype)

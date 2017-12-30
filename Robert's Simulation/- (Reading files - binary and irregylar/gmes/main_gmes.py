@@ -10,6 +10,8 @@ lmat = np.matrix(lead)
 gmr.save_to_text('gmes_leader.txt', lead)
 gmr.save_to_text('gmes_data.txt', dataC)
 
+
+
 # np.savetxt('lead.txt', lmat, fmt = '%s',newline = '\n')
 # lead['tmes']
 

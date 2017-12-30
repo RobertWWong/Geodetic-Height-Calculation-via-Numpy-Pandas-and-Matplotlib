@@ -1,6 +1,7 @@
 import struct as s
 import numpy as np
 
+
 def leader_reader(file ,off_set =0, numpy_array : bool =True):
     '''
     This function will read from a file the leader record of a new frame
@@ -126,5 +127,5 @@ def demo_gmes_reader():
     # This will preserve our numpy data type in a special binary numpy file
     np.save('nump_lead',mLead)
     np.save('nump_data',mCleand)
-
+    np.
     return mHead, mLead, mData ,mCleand

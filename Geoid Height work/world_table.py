@@ -67,6 +67,9 @@ def find_lat_or_long(lat_long , islat_long =True):
         return
     base = 9 if islat_long else 18
     rem = abs(lat_long)%10;             div = int(lat_long/10)
+
+    # Latitude decrement to get y2 and longitude increment to get x2 for all positive values
+    # Latitude and longitude will swap relationship  for all negative values
     lat_or_long = 1 if islat_long else -1
 
     if lat_long>=0:
@@ -75,13 +78,13 @@ def find_lat_or_long(lat_long , islat_long =True):
         if rem == 0:    # If our point is directly on the map, access the table directly.  y1=y2
             return base-div,base-div
         else:       # Our lat_long value lies between two other lat_long point
-            return base-div, base-div-lat_or_long     # y1 and y2 are different
+            return base-div, base-div-lat_or_long     # y1 < y2 are different
     else:
         div = int(-1*lat_long/10) if islat_long else div
         if rem ==0:
             return base+div,base+div
-        else:
-            return base+div, base+div+lat_or_long
+        else:       # Our largest x value is the highest index, and vice versa for the y values. So switch the return order
+            return base+div+lat_or_long, base+div
 
 def demo_boundary_search():
     test = [189, 180 ,182, 90, 50.23 , 50, 49.99, 0 ,-1, -9.9, -45, -59.9, -89, -91.2, -178, -179.21, -180, -181]
@@ -97,46 +100,62 @@ demo_boundary_search()
 
 # nx = -113.4152
 # ny = 43.536
-def get_index(xlist, ylist):
+def get_degrees(xlist, ylist):
     return [long_dict[i]for i in xlist] + [lat_dict[i] for i in ylist]
 
-def get_degrees(xIndex, yIndex):
-    return [ pworld.iloc[y1,x1]]
+def get_geoid(xIndex, yIndex,pworld):
+    nlist = []
+    for x in xIndex:
+        for y in yIndex:
+            nlist.append(pworld.iloc[y,x])
+    return nlist
 
 
-def find_four(nx, ny):
+def find_four(nx, ny, pworld):
     print("Interpolating for || lat {} and long {}||".format(ny,nx))
     x1,x2 = find_lat_or_long(nx,0)  # Find longitudinal coordinates
     y1,y2 = find_lat_or_long(ny)    # Find latitudinal coordinates
     print('Here are our table index values\nx1: {}\ny1: {}\nx2: {}\ny2: {}\n'.format(x1,y1,x2,y2))
 
-    Y1,Y2,X1,X2 = get_degrees([x1,x2], [y1,y2])
+    X1,X2,Y1,Y2 = get_degrees([x1,x2], [y1,y2]  )
     print("Here is our table degree values for each point:\nX1: {}\nY1: {}\nX2: {}\nY2: {}\n".format(X1,Y1,X2,Y2))
 
-    n11 = pworld.iloc[y1,x1]
-    n12 = pworld.iloc[y2,x1]
-    n21 = pworld.iloc[y1,x2]
-    n22 = pworld.iloc[y2,x2]
+    print('wtf ' , [x1,x2],[y1,y2])
+    n11, n12, n21, n22 = get_geoid([x1,x2],[y1,y2], pworld)
+
+
+
     print("Here is table's geoid value (also, you miswrote a geoid value for nx2): ")
     print("n11: {}\nn12: {}\nn21: {}\nn22: {}\n".format(n11,n12,n21,n22))
 
     nx1= ((X2-nx) *n11 + (nx-X1)*n21 )/ (X2-X1)
-    nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1) # it is n12 and n22,  word doc written asked for n12 and n11, which is incorrect
+    nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1)
     nxy = ((Y2-ny)/(Y2-Y1))*nx1 +((ny-Y1)/(Y2-Y1))*nx2
+    print('wtf come on: {} vs {}'.format(nx1,nx2))
+    # nx1= ((X2-nx) *n11 + (nx-X1)*n21 )/ (X2-X1)
+    # nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1) # it is n12 and n22,  word doc written asked for n12 and n11, which is incorrect
+    # nxy = ((Y2-ny)/(Y2-Y1))*nx1 +((ny-Y1)/(Y2-Y1))*nx2
     print("Our interpolated value from coordinates ({}, {}) is {}\nEnd of Program".format(nx,ny,nxy))
 
     return nxy
 
+nx = 54.5
+ny = 17.041667
+
+find_four(nx,ny,pworld)
 
 x1,x2 = find_lat_or_long(nx,0)  # Find longitudinal coordinates
 y1,y2 = find_lat_or_long(ny)    # Find latitudinal coordinates
 
-get_index([x1,x2],[y1,y2])
 
-nx = 54.5
-ny = 17.041667
+n11,n21,n12,n22 = get_geoid([x1,x2],[y1,y2],pworld)
+n11,n21,n12,n22
 
-find_four(nx,ny)
+x11 = pworld.iloc[y1,x1]
+x12 = pworld.iloc[y2,x1]
+x21 = pworld.iloc[y1,x2]
+x22 = pworld.iloc[y2,x2]
+pworld.iloc[6:10, 20:27]
 
 #
 # y1, y2

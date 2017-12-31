@@ -82,10 +82,10 @@ def find_four(nx, ny,world_table):
     y1,y2 = find_lat_or_long(ny)    # Find latitudinal coordinates
     print('Here are our table index values\nx1: {}\ny1: {}\nx2: {}\ny2: {}\n'.format(x1,y1,x2,y2))
 
-    Y1,Y2,X1,X2 = get_index([x1,x2], [y1,y2])
+    Y1,Y2,X1,X2 = get_degrees([x1,x2], [y1,y2])
     print("Here is our table degree values for each point:\nX1: {}\nY1: {}\nX2: {}\nY2: {}\n".format(X1,Y1,X2,Y2))
 
-    n11, n12, n21, n22 = get_degrees([X1,X2],[Y1,Y2],world_table)
+    n11, n12, n21, n22 = get_geoid([X1,X2],[Y1,Y2],world_table)
 
     print("Here is table's geoid value (also, you miswrote a geoid value for nx2): ")
     print("n11: {}\nn12: {}\nn21: {}\nn22: {}\n".format(n11,n12,n21,n22))

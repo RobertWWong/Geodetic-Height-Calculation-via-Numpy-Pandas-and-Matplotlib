@@ -28,8 +28,8 @@ def set_prefs(prefs):
     # for finding modules).  You can add paths to that list.  Note
     # that rope guesses project source folders correctly most of the
     # time; use this if you have any problems.
-    # The folders should be relative to project root and use '/' for
-    # separating folders regardless of the platform rope is running on.
+    # The folders should be relat_longive to project root and use '/' for
+    # separating folders regardless of the plat_longform rope is running on.
     # 'src/my_source_folder' for instance.
     #prefs.add('source_folders', 'src')
 

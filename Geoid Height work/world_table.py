@@ -144,9 +144,9 @@ def interp1D(X_Ydegrees, n11_n12, ny_x_val):
     '''
     Given that two of the coords fall in the same axis, only do interpolation in one direction.
     '''
-    x_y1,x_y2 = X_Ydegrees
+    x_y1, x_y2 = X_Ydegrees
     n11,n12 = n11_n12
-    Nxy = (x_y2-ny_x_val)/(x_y2-x_y1)*n11  +  (ny_x_val - x_y2)/(x_y2 - x_y1) * n12
+    Nxy = ((x_y2 - ny_x_val)/(x_y2-x_y1))*n11  +  ((ny_x_val - x_y1)/(x_y2 - x_y1)) * n12
     return Nxy
 
 def find_four(nx, ny, pworld):
@@ -159,6 +159,8 @@ def find_four(nx, ny, pworld):
     print("Here is our table degree values for each point:\nX1: {}\nY1: {}\nX2: {}\nY2: {}\n".format(X1,Y1,X2,Y2))
 
     if X1==X2 and Y1==Y2:
+        print("Here's our geoid table\n")
+        display_coords([Y1,Y2],[X1,X2], pworld)
         return pworld.loc[Y1,X1]
 
     geoid_list = n11, n12, n21, n22 = get_geoid([x1,x2],[y1,y2], pworld)
@@ -167,10 +169,12 @@ def find_four(nx, ny, pworld):
     print("n12: {}\t\tn22: {}\nn11: {}\t\tn21: {}\n".format(n12,n22, n11,n21))
 
     if Y1 == Y2:                  # Do interpolation on the X axis because Latitude is the same value
+        print("Do interp in x axis")
         Xdeg_list = [X1,X2]
         x_geoid_val = n11,n21
         nxy = interp1D(Xdeg_list, x_geoid_val, nx)
     elif X1 == X2:             # Do interpolation on the Y axis because longitude is the same value
+        print("Do interp in y axis")
         Ydeg_list = [Y1,Y2]
         y_geoid_val = n21,n22
         nxy = interp1D(Ydeg_list, y_geoid_val, ny)
@@ -200,8 +204,17 @@ find_four(nx,ny,pworld)
 ny = -30.123456; nx = -175.123456
 find_four(nx,ny,pworld)
 
+print('Time for case 2 and 3\n\n')
+
+ny = 30 ; nx = 175.123456
+find_four(nx,ny,pworld)
 
 
+interp1D([170,180],[-6,-7], nx)
+pworld
+
+ny = -30.123456; nx = -175
+find_four(nx,ny,pworld)
 
 
 # xl = [x1,x2 ]= find_lat_or_long(nx,0)  # Find longitudinal coordinates

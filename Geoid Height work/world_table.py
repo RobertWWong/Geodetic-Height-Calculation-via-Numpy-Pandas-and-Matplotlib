@@ -1,5 +1,8 @@
 import numpy as np
 import pandas as pd
+import scipy.interpolate as sc
+
+
 print('hello world')
 print("Consider these sites for interpolat_longion ")
 
@@ -96,10 +99,8 @@ def demo_boundary_search():
         print("test for longitude search",coord_val)
         print(find_lat_or_long(coord_val,0), end='\n\n')
 
-demo_boundary_search()
+# demo_boundary_search()
 
-# nx = -113.4152
-# ny = 43.536
 def get_degrees(xlist, ylist):
     return [long_dict[i]for i in xlist] + [lat_dict[i] for i in ylist]
 
@@ -110,9 +111,46 @@ def get_geoid(xIndex, yIndex,pworld):
             nlist.append(pworld.iloc[y,x])
     return nlist
 
+def interpX_Yd(Xlist_Ylist,Geoid_List, nyx_val):
+    X1,X2 = Xlist_Ylist[0]
+    Y1,Y2 = Xlist_Ylist[1]
+
+    n11, n12, n21, n22 = Geoid_List
+    ny,nx = nyx_val
+
+    nx1= ((X2-nx) *n11 + (nx-X1)*n21 )/ (X2-X1)
+    nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1)
+    nxy = ((Y2-ny)/(Y2-Y1))*nx1 +((ny-Y1)/(Y2-Y1))*nx2
+    return nxy
+
+def display_coords(latList, longLists, table_loc):
+    '''
+    This function will display a 4x4 ,2x1, or 1x2 geoid height table for a given coordinate list. It's a utility function.
+    The values of each lists must be in increments of 10
+    Element in lists are ordered from least to greatest
+    '''
+    lat1,lat2 = latList
+    long1,long2 = longLists
+
+    if lat1<lat2:
+        lat1,lat2 = lat2, lat1
+
+    if long1>long2:
+        long1,long2 = long2, long1
+
+    print('#'*15,'\n',table_loc.loc[lat1:lat2, long1:long2],'\n','#'*15)
+
+def interp1D(X_Ydegrees, n11_n12, ny_x_val):
+    '''
+    Given that two of the coords fall in the same axis, only do interpolation in one direction.
+    '''
+    x_y1,x_y2 = X_Ydegrees
+    n11,n12 = n11_n12
+    Nxy = (x_y2-ny_x_val)/(x_y2-x_y1)*n11  +  (ny_x_val - x_y2)/(x_y2 - x_y1) * n12
+    return Nxy
 
 def find_four(nx, ny, pworld):
-    print("Interpolating for || lat {} and long {}||".format(ny,nx))
+    print("Interpolating for || long {} and lat  {}||".format(nx,ny))
     x1,x2 = find_lat_or_long(nx,0)  # Find longitudinal coordinates
     y1,y2 = find_lat_or_long(ny)    # Find latitudinal coordinates
     print('Here are our table index values\nx1: {}\ny1: {}\nx2: {}\ny2: {}\n'.format(x1,y1,x2,y2))
@@ -120,42 +158,92 @@ def find_four(nx, ny, pworld):
     X1,X2,Y1,Y2 = get_degrees([x1,x2], [y1,y2]  )
     print("Here is our table degree values for each point:\nX1: {}\nY1: {}\nX2: {}\nY2: {}\n".format(X1,Y1,X2,Y2))
 
-    print('wtf ' , [x1,x2],[y1,y2])
-    n11, n12, n21, n22 = get_geoid([x1,x2],[y1,y2], pworld)
+    if X1==X2 and Y1==Y2:
+        return pworld.loc[Y1,X1]
 
-
+    geoid_list = n11, n12, n21, n22 = get_geoid([x1,x2],[y1,y2], pworld)
 
     print("Here is table's geoid value (also, you miswrote a geoid value for nx2): ")
-    print("n11: {}\nn12: {}\nn21: {}\nn22: {}\n".format(n11,n12,n21,n22))
+    print("n12: {}\t\tn22: {}\nn11: {}\t\tn21: {}\n".format(n12,n22, n11,n21))
 
-    nx1= ((X2-nx) *n11 + (nx-X1)*n21 )/ (X2-X1)
-    nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1)
-    nxy = ((Y2-ny)/(Y2-Y1))*nx1 +((ny-Y1)/(Y2-Y1))*nx2
-    print('wtf come on: {} vs {}'.format(nx1,nx2))
+    if Y1 == Y2:                  # Do interpolation on the X axis because Latitude is the same value
+        Xdeg_list = [X1,X2]
+        x_geoid_val = n11,n21
+        nxy = interp1D(Xdeg_list, x_geoid_val, nx)
+    elif X1 == X2:             # Do interpolation on the Y axis because longitude is the same value
+        Ydeg_list = [Y1,Y2]
+        y_geoid_val = n21,n22
+        nxy = interp1D(Ydeg_list, y_geoid_val, ny)
+    else:                         # All coord values are not on their respective axes
+        nxy = interpX_Yd([[X1,X2],[Y1,Y2]],geoid_list, [ny , nx])
+
     # nx1= ((X2-nx) *n11 + (nx-X1)*n21 )/ (X2-X1)
-    # nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1) # it is n12 and n22,  word doc written asked for n12 and n11, which is incorrect
+    # nx2= ((X2-nx) *n12 + (nx-X1)*n22 )/ (X2-X1)
     # nxy = ((Y2-ny)/(Y2-Y1))*nx1 +((ny-Y1)/(Y2-Y1))*nx2
-    print("Our interpolated value from coordinates ({}, {}) is {}\nEnd of Program".format(nx,ny,nxy))
+
+    print("Here's our geoid table\n")
+    display_coords([Y1,Y2],[X1,X2], pworld)
+
+    print("Our interpolated value from coordinates ({}, {}) is {}\nEnd of Program".format(ny,nx,nxy))
 
     return nxy
 
-nx = 54.5
-ny = 17.041667
-
+ny = 30.123456; nx = 175.123456
 find_four(nx,ny,pworld)
 
-x1,x2 = find_lat_or_long(nx,0)  # Find longitudinal coordinates
-y1,y2 = find_lat_or_long(ny)    # Find latitudinal coordinates
+ny = 30.123456; nx = -175.123456
+find_four(nx,ny,pworld)
+
+ny = -30.123456; nx = 175.123456
+find_four(nx,ny,pworld)
+
+ny = -30.123456; nx = -175.123456
+find_four(nx,ny,pworld)
 
 
-n11,n21,n12,n22 = get_geoid([x1,x2],[y1,y2],pworld)
-n11,n21,n12,n22
 
-x11 = pworld.iloc[y1,x1]
-x12 = pworld.iloc[y2,x1]
-x21 = pworld.iloc[y1,x2]
-x22 = pworld.iloc[y2,x2]
-pworld.iloc[6:10, 20:27]
+
+
+# xl = [x1,x2 ]= find_lat_or_long(nx,0)  # Find longitudinal coordinates
+# yl = [y1,y2] = find_lat_or_long(ny)    # Find latitudinal coordinates
+#
+#
+# xl
+# a1,a2 = xl
+# yl
+# the_grid = pworld.iloc[7:8+1, 23:24+1]
+# the_grid
+
+# xx = [x1,x2,x1,x2]
+# yy = [y1,y1,y2,y2]
+
+# Trying scipy interpolate module
+# sc.RectBivariateSpline(xx, yy, the_grid)    # x must be strictly increasing?
+
+# yas =sc.interp2d(yy,xx,the_grid)
+# yas(0,0)
+#
+#
+#
+#
+# xd1,xd2, yd1,yd2 = get_degrees([x1,x2],[y1,y2])
+# xd1,xd2, yd1,yd2
+#
+#
+# display_coords([yd1,yd2], [xd1,xd2] , pworld )
+# pworld.loc[yd1:yd2,xd1:xd2]        # Ahh i can access it via degrees using pandas.dataframes.loc[]
+# ]
+#
+#
+#
+# n11,n21,n12,n22 = get_geoid([x1,x2],[y1,y2],pworld)
+# n11,n21,n12,n22
+#
+# x11 = pworld.iloc[y1,x1]
+# x12 = pworld.iloc[y2,x1]
+# x21 = pworld.iloc[y1,x2]
+# x22 = pworld.iloc[y2,x2]
+# pworld.iloc[6:10, 20:27]
 
 #
 # y1, y2
@@ -177,23 +265,20 @@ pworld.iloc[6:10, 20:27]
 # ymat = [y1,y2,y1,y2]
 # zmat = pworld.iloc[y2:y1+1,x1:x2+1]
 # zmat
-import scipy.interpolate as sc
-
-sc.RectBivariateSpline(xmat, ymat, zmat)
-
-pworld
 
 
-dx, dy = 0.4, 0.4
-xmax, ymax = 2, 4
-x = np.arange(-xmax, xmax, dx)
-y = np.arange(-ymax, ymax, dy)
-X, Y = np.meshgrid(x, y)
-Z = np.exp(-(2*X)**2 - (Y/2)**2)
-
-X.shape
-Y.shape
-Z.shape
-interp_spline = sc.RectBivariateSpline(y, x, Z)
-
-interp_spline.degrees
+# sc.RectBivariateSpline(xmat, ymat, zmat)
+#
+# pworld
+#
+#
+# dx, dy = 0.4, 0.4
+# xmax, ymax = 2, 4
+# x = np.arange(-xmax, xmax, dx)
+# y = np.arange(-ymax, ymax, dy)
+# X, Y = np.meshgrid(x, y)
+# Z = np.exp(-(2*X)**2 - (Y/2)**2)
+#
+# X.shape
+# Y.shape
+# Z.shape

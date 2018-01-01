@@ -62,4 +62,4 @@ def convert_string_to_val(str_list):
 
 def save_txt (fout, nMatrix):
     save_fmt = '%.6f' +'%8d'*4 + '%19.9e'*5
-    np.savetxt(fout, nMatrix, fmt=save_fmt, delimiter=' ', newline='\n', header='', footer='', comments='# ')
+    np.savetxt(fout, nMatrix, fmt=save_fmt, delimiter=' ', newline='\r\n', header='', footer='', comments='# ')

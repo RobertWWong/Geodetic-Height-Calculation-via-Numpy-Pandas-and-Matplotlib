@@ -107,7 +107,7 @@ def save_to_text (fname, npArr):
     If i attempt to reformat my array type, it will screw up the row order.
     '''
     #This is the format to which we will save our file to
-    npArr.tofile(fname, sep= '\n')
+    npArr.tofile(fname, sep= '\r\n')
 
 
 
@@ -121,11 +121,10 @@ def demo_gmes_reader():
     mesFile = read_gmes_numpy(gmes)
     mHead, mLead, mData ,mCleand= mesFile   # This is called unpacking. Very useful if you hae a list of list, where each variable can be assigned to each inner element, provided you have enough variables
 
-    save_to_text('test_gmes_clean.txt', mCleand)
-    save_to_text('test_gmes_lead', mLead)
+    save_to_text('test_gmes_clean.txt', mCleand, newline='\r\n')
+    save_to_text('test_gmes_lead', mLead, newline='\r\n')
 
     # This will preserve our numpy data type in a special binary numpy file
     np.save('nump_lead',mLead)
     np.save('nump_data',mCleand)
-    np.
     return mHead, mLead, mData ,mCleand

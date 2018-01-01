@@ -25,7 +25,7 @@ def save_to_text ( fname, nparr):
     """
     nparr = turn_to_one(nparr)
     fmt= all_split('')
-    np.savetxt(fname, nparr, fmt=fmt, delimiter=' ', newline='\n')
+    np.savetxt(fname, nparr, fmt=fmt, delimiter=' ', newline='\r\n')
 
 
 def all_split(fmt:str):
